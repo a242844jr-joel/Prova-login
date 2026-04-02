@@ -543,3 +543,125 @@ img {
         padding: 1.25rem;
     }
 }
+
+/* ─── ADMIN PANEL STYLES ────────────────────────────── */
+.admin-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 90;
+    transition: all var(--transition);
+}
+
+.admin-fab:hover {
+    transform: rotate(90deg) scale(1.1);
+    background: var(--surface-2);
+    box-shadow: 0 12px 32px rgba(230, 57, 70, 0.4);
+}
+
+.admin-box {
+    background: var(--surface);
+    padding: 3rem 2rem 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px var(--accent);
+}
+
+.admin-box-large {
+    max-width: 600px;
+}
+
+.admin-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.admin-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.admin-input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: border 0.2s ease;
+}
+
+.admin-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.admin-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.admin-btn:hover {
+    background: #c12a38;
+}
+
+.admin-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.admin-error {
+    color: #ff6b6b;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.admin-status {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.admin-form .form-group {
+    margin-bottom: 0.5rem;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+}

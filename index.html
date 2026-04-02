@@ -278,6 +278,183 @@
         }
     </script>
 
-</body>
+    <!-- ADMIN BUTTON -->
+    <button class="admin-fab" onclick="openAdminLogin()" aria-label="Abrir Panel Admin">
+        ⚙️
+    </button>
 
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="lightbox-overlay" hidden>
+        <div class="admin-box">
+            <button class="lightbox-close" onclick="closeAdminLogin()">&#x2715;</button>
+            <h2 class="admin-title">Login Administrador</h2>
+            <p class="admin-desc">Introduce GitHub PAT (Permisos 'repo'). Se guarda temporalmente en sesión.</p>
+            <input type="password" id="adminPat" class="admin-input" placeholder="ghp_..." autocomplete="off">
+            <button class="admin-btn" onclick="verifyAdmin()">Entrar al Panel</button>
+            <p id="loginError" class="admin-error" hidden>Token inválido o sin permisos.</p>
+        </div>
+    </div>
+
+    <!-- ADMIN UPLOAD MODAL -->
+    <div id="adminUploadModal" class="lightbox-overlay" hidden>
+        <div class="admin-box admin-box-large">
+            <button class="lightbox-close" onclick="closeAdminUpload()">&#x2715;</button>
+            <h2 class="admin-title">Añadir Nuevo Héroe</h2>
+            <div class="admin-form">
+                <div class="form-group">
+                    <label>1. Selecciona Imagen</label>
+                    <input type="file" id="uploadFile" accept="image/jpeg, image/png, image/webp" class="admin-input" style="padding: 0.6rem;">
+                </div>
+                <div class="form-group">
+                    <label>2. Título</label>
+                    <input type="text" id="uploadTitle" class="admin-input" placeholder="Ej: Iron Man">
+                </div>
+                <div class="form-group">
+                    <label>3. Descripción</label>
+                    <textarea id="uploadCaption" class="admin-input" rows="3" placeholder="Descripción..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>4. Etiquetas (separadas por coma)</label>
+                    <input type="text" id="uploadTags" class="admin-input" placeholder="Marvel, Avenger">
+                </div>
+                <button class="admin-btn" id="btnSubmitUpload" onclick="submitNewPost()" style="margin-top: 10px;">🚀 Subir a GitHub</button>
+                <p id="uploadStatus" class="admin-status" hidden></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_REPO = 'a242844jr-joel/Prova-login';
+        
+        function openAdminLogin() {
+            if (sessionStorage.getItem('github_pat')) {
+                openAdminUpload();
+            } else {
+                document.getElementById('adminLoginModal').hidden = false;
+            }
+        }
+        
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').hidden = true;
+        }
+        
+        function openAdminUpload() {
+            document.getElementById('adminLoginModal').hidden = true;
+            document.getElementById('adminUploadModal').hidden = false;
+        }
+        
+        function closeAdminUpload() {
+            document.getElementById('adminUploadModal').hidden = true;
+        }
+        
+        async function verifyAdmin() {
+            const pat = document.getElementById('adminPat').value.trim();
+            if (!pat) return;
+            
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
+                    headers: { 'Authorization': `token ${pat}` }
+                });
+                if (res.ok) {
+                    sessionStorage.setItem('github_pat', pat);
+                    openAdminUpload();
+                } else {
+                    document.getElementById('loginError').hidden = false;
+                }
+            } catch (e) {
+                document.getElementById('loginError').hidden = false;
+            }
+        }
+        
+        async function submitNewPost() {
+            const fileInput = document.getElementById('uploadFile');
+            const title = document.getElementById('uploadTitle').value.trim();
+            const caption = document.getElementById('uploadCaption').value.trim();
+            const tags = document.getElementById('uploadTags').value.split(',').map(t => t.trim()).filter(t => t);
+            
+            if (!fileInput.files.length || !title || !caption || !tags.length) {
+                alert('Rellena todos los campos.');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const statusEl = document.getElementById('uploadStatus');
+            const btn = document.getElementById('btnSubmitUpload');
+            
+            btn.disabled = true;
+            statusEl.hidden = false;
+            
+            try {
+                const pat = sessionStorage.getItem('github_pat');
+                const headers = {
+                    'Authorization': `token ${pat}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                
+                statusEl.textContent = 'Convirtiendo imagen...';
+                const base64Content = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                    reader.readAsDataURL(file);
+                });
+                
+                const filename = `${Date.now()}_${file.name.replace(/\\s+/g, '_')}`;
+                const imgPath = `assets/${filename}`;
+                statusEl.textContent = 'Subiendo imagen...';
+                
+                await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${imgPath}`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({
+                        message: `Upload image ${filename} via Admin Panel`,
+                        content: base64Content
+                    })
+                });
+                
+                statusEl.textContent = 'Actualizando galería...';
+                const jsonRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/posts.json`, { headers });
+                const jsonMeta = await jsonRes.json();
+                
+                const contentStr = decodeURIComponent(escape(atob(jsonMeta.content)));
+                const currentPosts = JSON.parse(contentStr);
+                
+                const newId = currentPosts.length > 0 ? Math.max(...currentPosts.map(p => p.id)) + 1 : 1;
+                const newPost = {
+                    id: newId,
+                    img: imgPath,
+                    title,
+                    caption,
+                    tags,
+                    likes: 0,
+                    liked: false,
+                    time: 'Justo ahora'
+                };
+                
+                currentPosts.unshift(newPost);
+                
+                const updatedJsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(currentPosts, null, 2))));
+                await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/posts.json`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({
+                        message: `Add post "${title}" via Admin Panel`,
+                        content: updatedJsonBase64,
+                        sha: jsonMeta.sha
+                    })
+                });
+                
+                statusEl.textContent = '¡Felicidades, Héroe! Subido con éxito. Recargando web...';
+                statusEl.style.color = '#4ade80';
+                setTimeout(() => location.reload(), 2500);
+                
+            } catch (e) {
+                console.error(e);
+                statusEl.textContent = 'Error. Token PAT inválido o sin conexión.';
+                statusEl.style.color = '#ff6b6b';
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+</body>
 </html>
