@@ -77,6 +77,9 @@
                         <span id="lightboxLikes" class="like-count">0</span>
                     </button>
                 </div>
+                <div id="adminOptions" style="margin-top: 1rem; text-align: right; display: none;">
+                    <button class="admin-btn" style="background: #e63946; padding: 0.5rem 1rem; width: auto;" onclick="deleteAdminPost()">🗑️ Borrar Foto</button>
+                </div>
             </div>
         </div>
     </div>
@@ -226,6 +229,9 @@
             const likeBtn = document.getElementById('lightboxLikeBtn');
             likeBtn.querySelector('.heart-icon').innerHTML = post.liked ? '&#9829;' : '&#9825;';
             likeBtn.classList.toggle('liked', post.liked);
+
+            const adminOptions = document.getElementById('adminOptions');
+            adminOptions.style.display = sessionStorage.getItem('github_pat') ? 'block' : 'none';
 
             const modal = document.getElementById('lightboxModal');
             modal.hidden = false;
@@ -466,7 +472,55 @@
                 btn.disabled = false;
             }
         }
-    </script>
 
+        async function deleteAdminPost() {
+            if (!currentLightboxId) return;
+            const pat = sessionStorage.getItem('github_pat');
+            if (!pat) {
+                alert("No estás logueado como administrador.");
+                return;
+            }
+            if (!confirm("🚨 ¿Seguro que quieres borrar este héroe para siempre?")) return;
+            
+            const btn = document.querySelector('#adminOptions .admin-btn');
+            btn.textContent = "Borrando...";
+            btn.disabled = true;
+
+            try {
+                const headers = {
+                    'Authorization': `Bearer ${pat}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                
+                const jsonRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/posts.json`, { headers });
+                const jsonMeta = await jsonRes.json();
+                
+                const contentStr = decodeURIComponent(escape(atob(jsonMeta.content)));
+                let currentPosts = JSON.parse(contentStr);
+                
+                // Encontrar y borrar la imagen del array
+                currentPosts = currentPosts.filter(p => p.id !== currentLightboxId);
+                
+                const updatedJsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(currentPosts, null, 2))));
+                await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/posts.json`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({
+                        message: `Delete post via Admin Panel`,
+                        content: updatedJsonBase64,
+                        sha: jsonMeta.sha
+                    })
+                });
+                
+                alert('¡Héroe eliminado!');
+                location.reload();
+            } catch (e) {
+                console.error(e);
+                alert("Error al intentar borrar el post.");
+                btn.textContent = "🗑️ Borrar Foto";
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
