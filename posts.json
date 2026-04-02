@@ -1,17 +1,5 @@
 [
   {
-    "id": 5,
-    "img": "assets/1775157828210_267b65a7-099a-4425-a57e-03ea0e00512f-1_all_2012.jpg",
-    "title": "Venezuela",
-    "caption": "Petru Martinez",
-    "tags": [
-      "Arg."
-    ],
-    "likes": 0,
-    "liked": false,
-    "time": "Justo ahora"
-  },
-  {
     "id": 1,
     "img": "assets/1.jpeg",
     "title": "Star-Lord",
