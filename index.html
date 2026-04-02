@@ -352,17 +352,29 @@
             if (!pat) return;
             
             try {
+                const pat = document.getElementById('adminPat').value.trim();
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
-                    headers: { 'Authorization': `token ${pat}` }
+                    headers: { 
+                        'Authorization': `Bearer ${pat}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
                 });
                 if (res.ok) {
                     sessionStorage.setItem('github_pat', pat);
+                    document.getElementById('loginError').hidden = true;
                     openAdminUpload();
                 } else {
-                    document.getElementById('loginError').hidden = false;
+                    const err = await res.json();
+                    console.error("GitHub API Error:", err);
+                    const errorEl = document.getElementById('loginError');
+                    errorEl.textContent = `Token inválido o sin permisos (${res.status}).`;
+                    errorEl.hidden = false;
                 }
             } catch (e) {
-                document.getElementById('loginError').hidden = false;
+                console.error("Fetch Error:", e);
+                const errorEl = document.getElementById('loginError');
+                errorEl.textContent = 'Error de red o CORS. Revisa la consola (F12).';
+                errorEl.hidden = false;
             }
         }
         
@@ -387,7 +399,7 @@
             try {
                 const pat = sessionStorage.getItem('github_pat');
                 const headers = {
-                    'Authorization': `token ${pat}`,
+                    'Authorization': `Bearer ${pat}`,
                     'Accept': 'application/vnd.github.v3+json'
                 };
                 
