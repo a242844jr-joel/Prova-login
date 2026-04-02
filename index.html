@@ -232,7 +232,7 @@
             likeBtn.classList.toggle('liked', post.liked);
 
             const adminOptions = document.getElementById('adminOptions');
-            adminOptions.style.display = sessionStorage.getItem('github_pat') ? 'block' : 'none';
+            adminOptions.style.display = localStorage.getItem('github_pat') ? 'block' : 'none';
 
             const modal = document.getElementById('lightboxModal');
             modal.hidden = false;
@@ -334,7 +334,7 @@
         const GITHUB_REPO = 'a242844jr-joel/Prova-login';
         
         function openAdminLogin() {
-            if (sessionStorage.getItem('github_pat')) {
+            if (localStorage.getItem('github_pat')) {
                 openAdminUpload();
             } else {
                 document.getElementById('adminLoginModal').hidden = false;
@@ -367,7 +367,7 @@
                     }
                 });
                 if (res.ok) {
-                    sessionStorage.setItem('github_pat', pat);
+                    localStorage.setItem('github_pat', pat);
                     document.getElementById('loginError').hidden = true;
                     openAdminUpload();
                 } else {
@@ -404,7 +404,7 @@
             statusEl.hidden = false;
             
             try {
-                const pat = sessionStorage.getItem('github_pat');
+                const pat = localStorage.getItem('github_pat');
                 const headers = {
                     'Authorization': `Bearer ${pat}`,
                     'Accept': 'application/vnd.github.v3+json'
@@ -476,7 +476,7 @@
 
         async function deleteAdminPost() {
             if (!currentLightboxId) return;
-            const pat = sessionStorage.getItem('github_pat');
+            const pat = localStorage.getItem('github_pat');
             if (!pat) {
                 alert("No estás logueado como administrador.");
                 return;
