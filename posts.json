@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "img": "assets/1.jpeg",
+    "title": "Star-Lord",
+    "caption": "El Señor de las Estrellas. Líder autoproclamado de los Guardianes de la Galaxia. Mezcla de cassette y blasters.",
+    "tags": ["Marvel", "Guardianes", "SpaceHero"],
+    "likes": 42,
+    "liked": false,
+    "time": "Hace 2 días"
+  },
+  {
+    "id": 2,
+    "img": "assets/2.jpeg",
+    "title": "Thor",
+    "caption": "El Dios del Trueno de Asgard. Mjolnir, Stormbreaker y un look de rey vikingo espacial.",
+    "tags": ["Marvel", "Asgard", "GodOfThunder"],
+    "likes": 87,
+    "liked": false,
+    "time": "Hace 5 días"
+  },
+  {
+    "id": 3,
+    "img": "assets/3.jpeg",
+    "title": "Doctor Strange",
+    "caption": "Hechicero Supremo del Universo Marvel. Domina las artes místicas y dobla la realidad a su voluntad.",
+    "tags": ["Marvel", "Mystic", "Multiverse"],
+    "likes": 63,
+    "liked": false,
+    "time": "Hace 1 semana"
+  },
+  {
+    "id": 4,
+    "img": "assets/4.jpeg",
+    "title": "Spider-Man",
+    "caption": "Con un gran poder viene una gran responsabilidad. El Hombre Araña siempre encuentra la manera.",
+    "tags": ["Marvel", "SpiderVerse", "Queens"],
+    "likes": 124,
+    "liked": false,
+    "time": "Hace 3 días"
+  }
+]

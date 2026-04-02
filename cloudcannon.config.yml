@@ -1,0 +1,57 @@
+# CloudCannon CMS Configuration
+# Docs: https://cloudcannon.com/documentation/articles/defining-your-collections/
+
+# ── Collections ───────────────────────────────────────────────────
+collections_config:
+  posts:
+    path: posts.json
+    output: false
+    name: Fotos
+    singular_name: Foto
+    icon: image
+    description: "Gestiona las fotos de tu galería de héroes."
+    schema:
+      fields:
+        - key: id
+          type: number
+          label: ID
+          hidden: true
+        - key: img
+          type: image
+          label: Imagen
+          comment: "Sube la imagen a la carpeta /assets."
+          uploads_dir: assets
+        - key: title
+          type: text
+          label: Título
+        - key: caption
+          type: textarea
+          label: Descripción
+        - key: tags
+          type: array
+          label: Etiquetas
+          subtype: text
+        - key: likes
+          type: number
+          label: Likes iniciales
+        - key: liked
+          type: checkbox
+          label: Marcado como favorito
+          hidden: true
+        - key: time
+          type: text
+          label: Tiempo publicado
+          comment: "Ejemplo: 'Hace 2 días'"
+
+# ── Upload settings ───────────────────────────────────────────────
+uploads:
+  uploads_dir: assets
+
+# ── Editor settings ───────────────────────────────────────────────
+editor:
+  default_path: /
+
+# ── Build settings ────────────────────────────────────────────────
+# (Static site — no build command needed)
+build:
+  output: .
