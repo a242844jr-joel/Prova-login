@@ -97,7 +97,8 @@
         async function fetchData() {
             showLoading(true);
             try {
-                const res = await fetch('posts.json');
+                // Prevenir caché añadiendo timestamp (v=...)
+                const res = await fetch('posts.json?v=' + Date.now());
                 if (!res.ok) throw new Error('Network error');
                 const data = await res.json();
                 posts = data.map(p => ({ ...p, liked: false }));
